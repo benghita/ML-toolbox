@@ -133,7 +133,8 @@ def main():
         st.subheader('Generating report : ')
         st.dataframe(st.session_state.autom.df)
         pr = st.session_state.autom.df.profile_report()
-        st_profile_report(pr)
+        with st.expander("REPORT", expanded=True):
+            st_profile_report(pr)
         st.button("Start training", on_click = next )
 
     if st.session_state.page == 4 :

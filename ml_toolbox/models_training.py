@@ -1,14 +1,14 @@
-import time
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import cross_val_score
-from sklearn.metrics import make_scorer, mean_squared_error, r2_score, mean_absolute_error, explained_variance_score
-from sklearn.linear_model import LinearRegression, Ridge, Lasso
-from sklearn.tree import DecisionTreeRegressor
-from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor
-from sklearn.svm import SVR
-from sklearn.neighbors import KNeighborsRegressor
-from sklearn.neural_network import MLPRegressor
+from sklearn.metrics import make_scorer, mean_squared_error, mean_absolute_error, r2_score, explained_variance_score, accuracy_score, precision_score, recall_score, f1_score
+from sklearn.linear_model import LinearRegression, Ridge, Lasso, LogisticRegression
+from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
+from sklearn.ensemble import RandomForestRegressor, GradientBoostingRegressor, AdaBoostRegressor, RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
+from sklearn.svm import SVR, SVC
+from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
+from sklearn.neural_network import MLPRegressor, MLPClassifier
+import pickle
 
 
 
@@ -33,52 +33,47 @@ class RegressionModelEvaluator:
             'Mean Absolute Error': make_scorer(mean_absolute_error, greater_is_better=False),
             'R2 Score': make_scorer(r2_score),
             'Explained Variance Score': make_scorer(explained_variance_score),
-            'Negative Log Likelihood': make_scorer(lambda y_true, y_pred: -np.log(np.maximum(y_pred, 1e-15)).mean()),
-            'Execution Time': make_scorer(lambda _, __, exec_time: -exec_time, greater_is_better=True)
+            'Negative Log Likelihood': make_scorer(lambda y_true, y_pred: -np.log(np.maximum(y_pred, 1e-15)).mean())
         }
+        self.trained_models = {}
 
-    def evaluate_models(self, X, y, cv=5):
-        scores = {}
+    def train_and_evaluate_model(self, model_name, X, y, cv=5):
+        model = self.models.get(model_name)
 
-        for model_name, model in self.models.items():
-            model_scores = {}
-            for metric_name, metric in self.metrics.items():
-                if metric_name == 'Execution Time':
-                    start_time = time.time()
-                    score = cross_val_score(model, X, y, cv=cv, scoring=metric, fit_params={'exec_time': time.time() - start_time})
-                else:
-                    score = np.mean(cross_val_score(model, X, y, cv=cv, scoring=metric))
-                model_scores[metric_name] = score
-            scores[model_name] = model_scores
+        if model is None:
+            raise ValueError(f"Model '{model_name}' not found in the available models.")
 
-        score_grid = pd.DataFrame(scores)
-        best_model = score_grid.mean().idxmax()
+        model_scores = {}
 
-        return best_model, score_grid
+        # Train the model
+        model.fit(X, y)
 
+        for metric_name, metric in self.metrics.items():
+            score = np.mean(cross_val_score(model, X, y, cv=cv, scoring=metric))
+            model_scores[metric_name] = score
 
-# Example usage
-from sklearn.datasets import make_regression
+        # Save the trained model
+        self.trained_models[model_name] = model
 
-X, y = make_regression(n_samples=1000, n_features=10, random_state=42)
-evaluator = RegressionModelEvaluator()
-best_model, score_grid = evaluator.evaluate_models(X, y)
-print("Best Model:", best_model)
-print(score_grid)
+        return model_scores
 
- 
+    def save_models(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self.trained_models, file)
+
+    def get_best_model(self, X, y, cv=5, scoring='neg_mean_squared_error'):
+            if not self.trained_models:
+                raise ValueError("No models have been trained yet.")
+
+            best_model_name = max(self.trained_models, key=lambda model_name: np.mean(cross_val_score(self.trained_models[model_name], X, y, cv=cv, scoring=scoring)))
+            best_model = self.trained_models[best_model_name]
+            best_scores = cross_val_score(best_model, X, y, cv=cv, scoring=scoring)
+
+            return best_model_name, best_model, best_scores
 
 
 
 # Classification
-from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
-from sklearn.linear_model import LogisticRegression
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.ensemble import RandomForestClassifier, GradientBoostingClassifier, AdaBoostClassifier
-from sklearn.svm import SVC
-from sklearn.neighbors import KNeighborsClassifier
-from sklearn.neural_network import MLPClassifier
-
 class ClassificationModelEvaluator:
     def __init__(self):
         self.models = {
@@ -87,48 +82,48 @@ class ClassificationModelEvaluator:
             'Random Forest': RandomForestClassifier(),
             'Gradient Boosting': GradientBoostingClassifier(),
             'AdaBoost': AdaBoostClassifier(),
-            'SVM': SVC(probability=True),
+            'SVM': SVC(),
             'KNN': KNeighborsClassifier(),
             'MLP': MLPClassifier()
         }
         self.metrics = {
-            'Accuracy': accuracy_score,
-            'Precision': precision_score,
-            'Recall': recall_score,
-            'F1-Score': f1_score,
-            'ROC AUC': roc_auc_score,
-            'Execution Time': lambda _, __, exec_time: exec_time
+            'Accuracy': make_scorer(accuracy_score),
+            'Precision': make_scorer(precision_score),
+            'Recall': make_scorer(recall_score),
+            'F1 Score': make_scorer(f1_score)
         }
+        self.trained_models = {}
 
-    def evaluate_models(self, X, y, cv=5):
-        scores = {}
+    def train_and_evaluate_model(self, model_name, X, y, cv=5):
+        model = self.models.get(model_name)
 
-        for model_name, model in self.models.items():
-            model_scores = {}
-            for metric_name, metric in self.metrics.items():
-                if metric_name == 'Execution Time':
-                    start_time = time.time()
-                    score = -np.mean(cross_val_score(model, X, y, cv=cv, scoring=make_scorer(metric), fit_params={'exec_time': time.time() - start_time}))
-                else:
-                    score = np.mean(cross_val_score(model, X, y, cv=cv, scoring=make_scorer(metric)))
-                model_scores[metric_name] = score
-            scores[model_name] = model_scores
+        if model is None:
+            raise ValueError(f"Model '{model_name}' not found in the available models.")
 
-        score_grid = pd.DataFrame(scores)
-        best_model = score_grid.mean().idxmax()
+        model_scores = {}
 
-        return best_model, score_grid
+        # Train the model
+        model.fit(X, y)
 
+        for metric_name, metric in self.metrics.items():
+            score = np.mean(cross_val_score(model, X, y, cv=cv, scoring=metric))
+            model_scores[metric_name] = score
 
-# Example usage
-from sklearn.datasets import make_classification
-from sklearn.preprocessing import StandardScaler
+        # Save the trained model
+        self.trained_models[model_name] = model
 
-X, y = make_classification(n_samples=1000, n_features=20, random_state=42)
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(X)
+        return model_scores
 
-evaluator = ClassificationModelEvaluator()
-best_model, score_grid = evaluator.evaluate_models(X_scaled, y)
-print("Best Model:", best_model)
-print(score_grid)
+    def save_models(self, filename):
+        with open(filename, 'wb') as file:
+            pickle.dump(self.trained_models, file)
+
+    def get_best_model(self, X, y, cv=5, scoring='accuracy'):
+        if not self.trained_models:
+            raise ValueError("No models have been trained yet.")
+
+        best_model_name = max(self.trained_models, key=lambda model_name: np.mean(cross_val_score(self.trained_models[model_name], X, y, cv=cv, scoring=scoring)))
+        best_model = self.trained_models[best_model_name]
+        best_scores = cross_val_score(best_model, X, y, cv=cv, scoring=scoring)
+
+        return best_model_name, best_model, best_scores

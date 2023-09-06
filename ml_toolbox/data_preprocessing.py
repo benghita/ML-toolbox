@@ -38,7 +38,7 @@ def handle_missing_values(data, num_imputation_type='mean', categorical_imputati
     return data
 
 
-def handle_data_types(data, numeric_features=None, categorical_features=None, date_features=None, ignore_features=None):
+def handle_data_types(data, numeric_features=None, categorical_features=None, ignore_features=None):
     """
     Handle data types in a Pandas DataFrame.
 
@@ -60,9 +60,6 @@ def handle_data_types(data, numeric_features=None, categorical_features=None, da
 
     if categorical_features:
         data[categorical_features] = data[categorical_features].astype(str)
-
-    if date_features:
-        data[date_features] = pd.to_datetime(data[date_features])
 
     return data
 

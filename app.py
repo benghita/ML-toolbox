@@ -98,14 +98,14 @@ def main():
             st.header('Data Preprocessing', divider='violet')
 
             st.dataframe(st.session_state.autom.feautures)
-            ctg_cols = st.session_state.autom.feautures.select_dtypes(include=['object']).columns.tolist()
+            st.session_state.ctg_cols = st.session_state.autom.feautures.select_dtypes(include=['object']).columns.tolist()
 
             st.subheader('Encoding categorical data : ')
-            st.multiselect('Select categorical columns to apply one hot encoding :', ctg_cols, key = 'one_hot')
-            st.slider('Select max encoding :', 1, 25, 10, key = 'max_encod')
-            st.multiselect('Select categorical columns to apply ordinal encoding :', ctg_cols, key = 'ordinal_cols')
-            st.warning('Ensure that there are no shared columns between the ordinal encoding and one-hot encoding columns')
-            st.warning('Make sure that all categorical columns are encoded using either one-hot encoding or ordinal encoding to make them compatible with the models.')
+            #st.multiselect('Select categorical columns to apply one hot encoding :', ctg_cols, key = 'one_hot')
+            st.slider('Select max encoding for one hot encoding:', 1, 25, 10, key = 'max_encod')
+            #st.multiselect('Select categorical columns to apply ordinal encoding :', ctg_cols, key = 'ordinal_cols')
+            #st.warning('Ensure that there are no shared columns between the ordinal encoding and one-hot encoding columns')
+            #st.warning('Make sure that all categorical columns are encoded using either one-hot encoding or ordinal encoding to make them compatible with the models.')
             st.divider()
 
             st.subheader('Normalizing numerical data : ')
@@ -125,7 +125,7 @@ def main():
 
     if st.session_state.page == 3 :
 
-        st.session_state.autom.handle_encoding_and_normalization(st.session_state.one_hot, st.session_state.max_encod,
+        st.session_state.autom.handle_encoding_and_normalization(st.session_state.ctg_cols, st.session_state.max_encod,
                                                                 st.session_state.ordinal_cols, st.session_state.norm_method,
                                                                 st.session_state.norm_cols)
         if st.session_state.selection :

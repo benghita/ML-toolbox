@@ -69,13 +69,13 @@ class autoML :
         return self.model_evaluator.train_and_evaluate_model('Random Forest', self.X, self.y)
     def gradient_boosting(self):
         return self.model_evaluator.train_and_evaluate_model('Gradient Boosting', self.X, self.y)
-    def AdaBoost(self):
+    def adaboost(self):
         return self.model_evaluator.train_and_evaluate_model('AdaBoost', self.X, self.y)
-    def SVR(self):
+    def svr(self):
         return self.model_evaluator.train_and_evaluate_model('SVR', self.X, self.y)
-    def KNN(self):
+    def knn(self):
         return self.model_evaluator.train_and_evaluate_model('KNN', self.X, self.y)
-    def MLP(self):
+    def mlp(self):
         return self.model_evaluator.train_and_evaluate_model('MLP', self.X, self.y)
     def logistic_regression(self):
         return self.model_evaluator.train_and_evaluate_model('Logistic Regression', self.X, self.y)

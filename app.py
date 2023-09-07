@@ -1,6 +1,7 @@
 import streamlit as st
-from streamlit_pandas_profiling import st_profile_report
 import pandas as pd
+import pandas_profiling
+from streamlit_pandas_profiling import st_profile_report
 from ml_toolbox.AutoML import autoML
 from io import StringIO
 import numpy as np
@@ -123,6 +124,7 @@ def main():
                 
 
     if st.session_state.page == 3 :
+    # Page 4 : Generate report
 
         st.session_state.autom.handle_encoding_and_normalization(st.session_state.ctg_cols, st.session_state.max_encod,
                                                                 st.session_state.norm_method,

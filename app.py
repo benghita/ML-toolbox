@@ -149,8 +149,6 @@ def main():
             st.header('Train and evaluate regression models', divider='violet')
             st.subheader('Linear Regression : ')
             st.write(st.session_state.autom.linear_regression())
-            st.subheader('Ridge : ')
-            st.write(st.session_state.autom.ridge())
             next_model = True
 
         elif task == 'classification' : 
@@ -163,22 +161,18 @@ def main():
             st.warning('Can not identify the task')
 
         if next_model :
-            st.subheader('Lasso : ')
-            st.write(st.session_state.autom.lasso())
-            st.subheader('Decision Tree : ')
-            st.write(st.session_state.autom.decision_tree())
-            st.subheader('Random Forest : ')
-            st.write(st.session_state.autom.random_forest())
-            st.subheader('Gradient Boosting : ')
-            st.write(st.session_state.autom.gradient_boosting())
-            st.subheader('AdaBoost : ')
-            st.write(st.session_state.autom.AdaBoost())
-            st.subheader('SVR : ')
-            st.write(st.session_state.autom.SVR())
-            st.subheader('KNN : ')
-            st.write(st.session_state.autom.KNN())
-            st.subheader('MLP : ')
-            st.write(st.session_state.autom.MLP())
+            # List of model names
+            model_names = ['Ridge', 'Lasso', 'Decision Tree', 'Random Forest', 'Gradient Boosting', 'AdaBoost', 'SVR', 'KNN', 'MLP']
+
+            # Loop through model names
+            for model_name in model_names:
+                st.subheader(f'{model_name} : ')
+                try:
+                    model_result = getattr(st.session_state.autom, model_name.lower().replace(' ', '_'))()
+                    st.write(model_result)
+                except Exception as e:
+                    st.write(f"An error occurred for {model_name}: {e}")
+                    
             best_model_name, best_model, best_scores = st.session_state.autom.best_model()
             st.write("Best model : ", best_model_name)
             st.write("Best model scores : ", best_scores)

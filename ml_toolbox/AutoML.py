@@ -28,11 +28,11 @@ class autoML :
     def handle_encoding_and_normalization(self,
                                           columns_to_encode,
                                           max_encoding,
-                                          ordinal_features,
+                                          #ordinal_features,
                                           normalization_method,
                                           features_to_normalize):
         self.feautures = dp.perform_one_hot_encoding(self.feautures, columns_to_encode, max_encoding)
-        self.feautures = dp.perform_ordinal_encoding(self.feautures, ordinal_features)
+        #self.feautures = dp.perform_ordinal_encoding(self.feautures, ordinal_features)
         self.feautures = dp.perform_normalization(self.feautures, normalization_method, features_to_normalize)
         self.df = pd.concat([self.feautures, self.df[self.target]], axis=1)
 

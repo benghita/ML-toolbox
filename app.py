@@ -119,13 +119,13 @@ def main():
                 ('univariate', 'classic', 'sequential'), key = 'select_method') 
             st.number_input('Specify the threshold value for removing low variance features :', key = 'threshold')
             
-            st.form_submit_button("Apply changes", on_click = next) 
+            st.form_submit_button("Apply changes", on_click = next)  
                 
 
     if st.session_state.page == 3 :
 
         st.session_state.autom.handle_encoding_and_normalization(st.session_state.ctg_cols, st.session_state.max_encod,
-                                                                st.session_state.ordinal_cols, st.session_state.norm_method,
+                                                                st.session_state.norm_method,
                                                                 st.session_state.norm_cols)
         if st.session_state.selection :
             st.session_state.autom.selection(st.session_state.select_method, st.session_state.threshold)

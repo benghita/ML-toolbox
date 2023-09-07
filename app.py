@@ -149,6 +149,8 @@ def main():
             st.header('Train and evaluate regression models', divider='violet')
             st.subheader('Linear Regression : ')
             st.write(st.session_state.autom.linear_regression())
+            st.subheader('Ridge : ')
+            st.write(st.session_state.autom.ridge())
             next_model = True
 
         elif task == 'classification' : 
@@ -161,8 +163,6 @@ def main():
             st.warning('Can not identify the task')
 
         if next_model :
-            st.subheader('Ridge : ')
-            st.write(st.session_state.autom.ridge())
             st.subheader('Lasso : ')
             st.write(st.session_state.autom.lasso())
             st.subheader('Decision Tree : ')

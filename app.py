@@ -140,6 +140,7 @@ def main():
         st.button("Start training", on_click = next )
 
     if st.session_state.page == 4 :
+    # Page 5 : Train and evaluate the model
 
         next_model = False
 
@@ -179,8 +180,8 @@ def main():
             st.subheader('MLP : ')
             st.write(st.session_state.autom.MLP())
             best_model_name, best_model, best_scores = st.session_state.autom.best_model()
-            print(f"Best model: {best_model_name}")
-            print(f"Best model scores: {best_scores}")
+            st.write("Best model : ", best_model_name)
+            st.write("Best model scores : ", best_scores)
 
             if st.button("Download the best model"):
                 with open('best_model.pkl', 'wb') as file:

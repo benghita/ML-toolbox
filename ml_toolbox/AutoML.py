@@ -51,7 +51,7 @@ class autoML :
         if pd.api.types.is_numeric_dtype(column):
             self.model_evaluator = mt.RegressionModelEvaluator()
             return "regression"
-        elif pd.api.types.is_categorical_dtype(column) or column.dtype == 'object':
+        elif column.dtype == 'object':
             self.model_evaluator = mt.ClassificationModelEvaluator()
             return "classification"
         else:

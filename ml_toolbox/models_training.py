@@ -10,10 +10,7 @@ from sklearn.neighbors import KNeighborsRegressor, KNeighborsClassifier
 from sklearn.neural_network import MLPRegressor, MLPClassifier
 import pickle
 
-
-
 # Regression
-
 class RegressionModelEvaluator:
     def __init__(self):
         self.models = {
@@ -57,9 +54,8 @@ class RegressionModelEvaluator:
 
         return model_scores
 
-    def save_models(self, filename):
-        with open(filename, 'wb') as file:
-            pickle.dump(self.trained_models, file)
+    def save_models(self):
+        return self.trained_models
 
     def get_best_model(self, X, y, cv=5, scoring='neg_mean_squared_error'):
             if not self.trained_models:
@@ -70,8 +66,6 @@ class RegressionModelEvaluator:
             best_scores = cross_val_score(best_model, X, y, cv=cv, scoring=scoring)
 
             return best_model_name, best_model, best_scores
-
-
 
 # Classification
 class ClassificationModelEvaluator:
@@ -114,9 +108,8 @@ class ClassificationModelEvaluator:
 
         return model_scores
 
-    def save_models(self, filename):
-        with open(filename, 'wb') as file:
-            pickle.dump(self.trained_models, file)
+    def save_models(self):
+        return self.trained_models
 
     def get_best_model(self, X, y, cv=5, scoring='accuracy'):
         if not self.trained_models:

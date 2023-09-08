@@ -82,7 +82,7 @@ class autoML :
     
     def best_model(self):
         return self.model_evaluator.get_best_model(self.X, self.y)
-    def save_models(self):
-        self.model_evaluator.save_models('trained_classification_models.pkl')
+    def getmodels(self):
+        return self.model_evaluator.save_models()
 
     
